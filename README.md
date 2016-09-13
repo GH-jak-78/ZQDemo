@@ -19,7 +19,7 @@
     多行文本
     多行文本
 
-~高亮~
+`高亮`
 
 http://www.baidu.com
 
@@ -42,7 +42,7 @@ http://www.baidu.com
 [![baidu]](http://baidu.com)  
 [baidu]:http://www.baidu.com/img/bdlogo.gif "百度Logo" 
 
-~~~object-c
+```objective-c
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.row) {
@@ -80,4 +80,4 @@ http://www.baidu.com
             break;
     }
 }
-~~~
+```
