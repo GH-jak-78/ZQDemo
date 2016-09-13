@@ -90,7 +90,7 @@
 
 - (void)interlock:(ZQInterlock *)interlock didTranslationWithTranslationHeight:(CGFloat)translationHeight
 {
-    [self.navigationController.navigationBar setBackgroundAlpha:translationHeight / 136.0];
+    [self.navigationController.navigationBar setBackgroundAlpha:translationHeight / (200.0 - 64.0)];
 }
 
 - (void)paginationController:(ZQPaginationController *)paginationController willChangePageAtIndex:(NSInteger)index

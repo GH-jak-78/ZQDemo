@@ -21,6 +21,8 @@
 		D79047D81D82AFCD00076041 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D79047CA1D82AFCD00076041 /* NSLayoutConstraint+MASDebugAdditions.m */; };
 		D79047D91D82AFCD00076041 /* View+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D79047CC1D82AFCD00076041 /* View+MASAdditions.m */; };
 		D79047DA1D82AFCD00076041 /* ViewController+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D79047CF1D82AFCD00076041 /* ViewController+MASAdditions.m */; };
+		D79BD4C51D8790AF00130D64 /* ZQClassesView.m in Sources */ = {isa = PBXBuildFile; fileRef = D79BD4C41D8790AF00130D64 /* ZQClassesView.m */; };
+		D79BD4C81D879A7A00130D64 /* ClassesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D79BD4C71D879A7A00130D64 /* ClassesViewController.m */; };
 		D7A174D41D86445C00927412 /* InterLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7A174D31D86445C00927412 /* InterLockViewController.m */; };
 		D7A174D71D86459400927412 /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7A174D61D86459400927412 /* TableViewController.m */; };
 		D7A174DB1D869AF800927412 /* UINavigationBar+BackgroundAlpha.m in Sources */ = {isa = PBXBuildFile; fileRef = D7A174DA1D869AF800927412 /* UINavigationBar+BackgroundAlpha.m */; };
@@ -65,6 +67,10 @@
 		D79047CD1D82AFCD00076041 /* View+MASShorthandAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "View+MASShorthandAdditions.h"; sourceTree = "<group>"; };
 		D79047CE1D82AFCD00076041 /* ViewController+MASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewController+MASAdditions.h"; sourceTree = "<group>"; };
 		D79047CF1D82AFCD00076041 /* ViewController+MASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewController+MASAdditions.m"; sourceTree = "<group>"; };
+		D79BD4C31D8790AF00130D64 /* ZQClassesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZQClassesView.h; sourceTree = "<group>"; };
+		D79BD4C41D8790AF00130D64 /* ZQClassesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZQClassesView.m; sourceTree = "<group>"; };
+		D79BD4C61D879A7A00130D64 /* ClassesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassesViewController.h; sourceTree = "<group>"; };
+		D79BD4C71D879A7A00130D64 /* ClassesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClassesViewController.m; sourceTree = "<group>"; };
 		D7A174D21D86445C00927412 /* InterLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterLockViewController.h; sourceTree = "<group>"; };
 		D7A174D31D86445C00927412 /* InterLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterLockViewController.m; sourceTree = "<group>"; };
 		D7A174D51D86459400927412 /* TableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewController.h; sourceTree = "<group>"; };
@@ -153,6 +159,15 @@
 			path = Masonry;
 			sourceTree = "<group>";
 		};
+		D79BD4C21D8790AF00130D64 /* ZQClassesView */ = {
+			isa = PBXGroup;
+			children = (
+				D79BD4C31D8790AF00130D64 /* ZQClassesView.h */,
+				D79BD4C41D8790AF00130D64 /* ZQClassesView.m */,
+			);
+			path = ZQClassesView;
+			sourceTree = "<group>";
+		};
 		D7A174D81D869AF800927412 /* UINavigationBar+BackgroundAlpha */ = {
 			isa = PBXGroup;
 			children = (
@@ -185,6 +200,7 @@
 				D79047B41D82AFCD00076041 /* Lib */,
 				D7A174D81D869AF800927412 /* UINavigationBar+BackgroundAlpha */,
 				D79047A91D8281D200076041 /* ZQInterlock */,
+				D79BD4C21D8790AF00130D64 /* ZQClassesView */,
 				D79047AC1D8281D200076041 /* ZQPaginationController */,
 				D7C1A0D71D7FC314006C8EA7 /* AppDelegate.h */,
 				D7C1A0D81D7FC314006C8EA7 /* AppDelegate.m */,
@@ -196,6 +212,8 @@
 				D79047B21D82A31C00076041 /* PaginationViewController.m */,
 				D7A174D21D86445C00927412 /* InterLockViewController.h */,
 				D7A174D31D86445C00927412 /* InterLockViewController.m */,
+				D79BD4C61D879A7A00130D64 /* ClassesViewController.h */,
+				D79BD4C71D879A7A00130D64 /* ClassesViewController.m */,
 				D7C1A0DD1D7FC314006C8EA7 /* Main.storyboard */,
 				D7C1A0E01D7FC314006C8EA7 /* Assets.xcassets */,
 				D7C1A0E21D7FC314006C8EA7 /* LaunchScreen.storyboard */,
@@ -299,9 +317,11 @@
 				D79047D91D82AFCD00076041 /* View+MASAdditions.m in Sources */,
 				D79047D11D82AFCD00076041 /* MASCompositeConstraint.m in Sources */,
 				D79047D81D82AFCD00076041 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
+				D79BD4C51D8790AF00130D64 /* ZQClassesView.m in Sources */,
 				D7A174D71D86459400927412 /* TableViewController.m in Sources */,
 				D79047D31D82AFCD00076041 /* MASConstraintMaker.m in Sources */,
 				D7C1A0D91D7FC314006C8EA7 /* AppDelegate.m in Sources */,
+				D79BD4C81D879A7A00130D64 /* ClassesViewController.m in Sources */,
 				D79047AF1D8281D200076041 /* ZQInterlock.m in Sources */,
 				D7C1A0D61D7FC314006C8EA7 /* main.m in Sources */,
 			);
