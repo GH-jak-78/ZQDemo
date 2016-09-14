@@ -132,7 +132,7 @@
             NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:backLineView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.itemsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0];
             NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:backLineView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.itemsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0];
             NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:backLineView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.itemsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-            NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:backLineView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.itemsView attribute:NSLayoutAttributeHeight multiplier:0.0 constant:2.0];
+            NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:backLineView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.itemsView attribute:NSLayoutAttributeHeight multiplier:0.0 constant:LHYItemsViewLineH];
             
             [self.itemsView addConstraints:@[leftConstraint, rightConstraint, bottomConstraint, heightConstraint]];
         }

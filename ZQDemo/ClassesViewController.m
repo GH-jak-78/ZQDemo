@@ -35,6 +35,7 @@
     self.classesView.classes = self.classes;
     
     UIImageView *headerView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"img_01"]];
+    headerView.userInteractionEnabled = YES;
     
     self.interlock = [[ZQInterlock alloc]initWithSourceView:self.classesView targetView:headerView translationHeight:200.0 - 64.0];
     self.interlock.delegate = self;

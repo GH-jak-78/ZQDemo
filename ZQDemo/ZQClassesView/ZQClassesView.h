@@ -29,7 +29,7 @@
 @property (strong, nonatomic, readonly) UITableView *verticalView;
 @property (strong, nonatomic, readonly) UICollectionView *contentView;
 
-@property (copy, nonatomic) NSArray *classes;
+@property (copy, nonatomic) NSArray<ZQClasses *> *classes;
 
 @end
 
@@ -42,7 +42,7 @@
 
 @property (copy, nonatomic) NSString *descString;
 
-@property (copy, nonatomic) NSArray *childClasses;
+@property (copy, nonatomic) NSArray<ZQClasses *> *childClasses;
 
 @end
 
