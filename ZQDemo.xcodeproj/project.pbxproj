@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D76047541D8E5F960079F4B5 /* ZQDetect.m in Sources */ = {isa = PBXBuildFile; fileRef = D76047531D8E5F960079F4B5 /* ZQDetect.m */; };
+		D76047571D8E616F0079F4B5 /* DetectController.m in Sources */ = {isa = PBXBuildFile; fileRef = D76047561D8E616F0079F4B5 /* DetectController.m */; };
 		D79047AF1D8281D200076041 /* ZQInterlock.m in Sources */ = {isa = PBXBuildFile; fileRef = D79047AB1D8281D200076041 /* ZQInterlock.m */; };
 		D79047B01D8281D200076041 /* ZQPaginationController.m in Sources */ = {isa = PBXBuildFile; fileRef = D79047AE1D8281D200076041 /* ZQPaginationController.m */; };
 		D79047B31D82A31C00076041 /* PaginationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D79047B21D82A31C00076041 /* PaginationViewController.m */; };
@@ -35,6 +37,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D76047521D8E5F960079F4B5 /* ZQDetect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZQDetect.h; sourceTree = "<group>"; };
+		D76047531D8E5F960079F4B5 /* ZQDetect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZQDetect.m; sourceTree = "<group>"; };
+		D76047551D8E616F0079F4B5 /* DetectController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetectController.h; sourceTree = "<group>"; };
+		D76047561D8E616F0079F4B5 /* DetectController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetectController.m; sourceTree = "<group>"; };
 		D79047AA1D8281D200076041 /* ZQInterlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZQInterlock.h; sourceTree = "<group>"; };
 		D79047AB1D8281D200076041 /* ZQInterlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZQInterlock.m; sourceTree = "<group>"; };
 		D79047AD1D8281D200076041 /* ZQPaginationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZQPaginationController.h; sourceTree = "<group>"; };
@@ -100,6 +106,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D76047511D8E5F960079F4B5 /* ZQDetect */ = {
+			isa = PBXGroup;
+			children = (
+				D76047521D8E5F960079F4B5 /* ZQDetect.h */,
+				D76047531D8E5F960079F4B5 /* ZQDetect.m */,
+			);
+			path = ZQDetect;
+			sourceTree = "<group>";
+		};
 		D79047A91D8281D200076041 /* ZQInterlock */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,6 +214,7 @@
 			children = (
 				D79047B41D82AFCD00076041 /* Lib */,
 				D7A174D81D869AF800927412 /* UINavigationBar+BackgroundAlpha */,
+				D76047511D8E5F960079F4B5 /* ZQDetect */,
 				D79047A91D8281D200076041 /* ZQInterlock */,
 				D79BD4C21D8790AF00130D64 /* ZQClassesView */,
 				D79047AC1D8281D200076041 /* ZQPaginationController */,
@@ -214,6 +230,8 @@
 				D7A174D31D86445C00927412 /* InterLockViewController.m */,
 				D79BD4C61D879A7A00130D64 /* ClassesViewController.h */,
 				D79BD4C71D879A7A00130D64 /* ClassesViewController.m */,
+				D76047551D8E616F0079F4B5 /* DetectController.h */,
+				D76047561D8E616F0079F4B5 /* DetectController.m */,
 				D7C1A0DD1D7FC314006C8EA7 /* Main.storyboard */,
 				D7C1A0E01D7FC314006C8EA7 /* Assets.xcassets */,
 				D7C1A0E21D7FC314006C8EA7 /* LaunchScreen.storyboard */,
@@ -304,11 +322,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D79047D21D82AFCD00076041 /* MASConstraint.m in Sources */,
+				D76047541D8E5F960079F4B5 /* ZQDetect.m in Sources */,
 				D79047D51D82AFCD00076041 /* MASViewAttribute.m in Sources */,
 				D7A174D41D86445C00927412 /* InterLockViewController.m in Sources */,
 				D79047DA1D82AFCD00076041 /* ViewController+MASAdditions.m in Sources */,
 				D79047D71D82AFCD00076041 /* NSArray+MASAdditions.m in Sources */,
 				D79047B31D82A31C00076041 /* PaginationViewController.m in Sources */,
+				D76047571D8E616F0079F4B5 /* DetectController.m in Sources */,
 				D79047D61D82AFCD00076041 /* MASViewConstraint.m in Sources */,
 				D79047D41D82AFCD00076041 /* MASLayoutConstraint.m in Sources */,
 				D79047B01D8281D200076041 /* ZQPaginationController.m in Sources */,

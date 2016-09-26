@@ -10,6 +10,7 @@
 #import "PaginationViewController.h"
 #import "InterLockViewController.h"
 #import "ClassesViewController.h"
+#import "DetectController.h"
 
 @interface ViewController ()
 
@@ -73,6 +74,13 @@
         case 2:
         {
             ClassesViewController *vc = [[ClassesViewController alloc]init];
+            [self.navigationController pushViewController:vc animated:YES];
+            
+            break;
+        }
+        case 3:
+        {
+            DetectController *vc = [[DetectController alloc]init];
             [self.navigationController pushViewController:vc animated:YES];
             
             break;

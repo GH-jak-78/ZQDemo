@@ -1,5 +1,5 @@
 
-### ZQInterlock
+## ZQInterlock
 
 实现了现在APP很流行的滚动TableView,让上部分视图跟着隐藏或只显示一个Tabbar,效果如下:
 
@@ -18,7 +18,7 @@ self.interlock = [[ZQInterlock alloc]initWithSourceView:self.paginationControlle
 E-mail:jak_78@sina.com
 
 
-### ZQPaginationController
+## ZQPaginationController
 封装好的分页导航控制器
 
 可以在这基础上继承使用,也可作为其它控制器的属性或成员变量使用,但这时需手工将该控制加到其父控制器的子控制器集中,不管哪种用法,都要自已去管理其的itemView的布局,效果见上面的gif图
@@ -46,12 +46,12 @@ self.paginationController = [[ZQPaginationController alloc]initWithChildControll
 ```
 
 
-### ZQClassesView
+## ZQClassesView
 
 封装好的分类视图
 
 
-### UINavigationBar+BackgroundAlpha
+## UINavigationBar+BackgroundAlpha
 设置导航栏背影透明度的分类
 
 监听滚动的距离按比率设置
