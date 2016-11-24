@@ -28,6 +28,8 @@
 @property (assign, nonatomic, getter=isAnimateChangedItem) BOOL animateChangedItem; // 默认YES
 @property (assign, nonatomic, getter=isAnimateChangedPage) BOOL animateChangedPage; // 默认YES
 
+@property (assign, nonatomic, readonly) NSInteger currentIndex;
+
 - (instancetype)initWithChildControllers:(NSArray *)childControllers;
 
 - (void)selectPageAtIndex:(NSInteger)index;

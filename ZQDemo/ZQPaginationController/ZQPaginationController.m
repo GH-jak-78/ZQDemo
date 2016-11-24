@@ -157,8 +157,8 @@
 
 - (void)itemDidTouch:(UIButton *)button
 {
+    [self willChangePageAtIndex:button.tag];
     self.currentIndex = button.tag;
-    [self willChangePageAtIndex:self.currentIndex];
     
     [self.scrollView setContentOffset:CGPointMake(self.scrollView.bounds.size.width * button.tag, self.scrollView.contentOffset.y) animated:self.animateChangedPage];
     
