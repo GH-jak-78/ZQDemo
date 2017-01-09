@@ -11,6 +11,7 @@
 #import "TableViewController.h"
 #import "ZQInterlock.h"
 #import "Masonry.h"
+#import "ZQPictureRotator.h"
 
 #import "UINavigationBar+BackgroundAlpha.h"
 
@@ -38,20 +39,21 @@
     self.paginationController.delegate = self;
     
     UIView *headerView = [[UIView alloc]init];
-    UIImageView *imageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"img_01"]];
+    ZQPictureRotator *pictureRotator = [[ZQPictureRotator alloc]init];
+    pictureRotator.pictures = @[@"img_01", @"img_02", @"img_03", @"img_04", @"img_05"];
     
     self.interlock = [[ZQInterlock alloc]initWithSourceView:self.paginationController.view targetView:headerView translationHeight:200.0 - 64.0];
     self.interlock.delegate = self;
     [self.interlock registerScrollViews:@[vc1.tableView, vc2.tableView, vc3.tableView]];
     
-    [headerView addSubview:imageView];
+    [headerView addSubview:pictureRotator];
     [headerView addSubview:self.paginationController.itemsView];
     
     [self.view addSubview:headerView];
     [self.view addSubview:self.paginationController.view];
     [self addChildViewController:self.paginationController];
     
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [pictureRotator mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.offset(0.0);
         make.height.offset(200.0);
     }];
