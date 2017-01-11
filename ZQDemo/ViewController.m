@@ -11,6 +11,7 @@
 #import "InterLockViewController.h"
 #import "ClassesViewController.h"
 #import "DetectController.h"
+#import "ApiManagerTestController.h"
 
 @interface ViewController ()
 
@@ -62,6 +63,7 @@
             
             PaginationViewController *pvc = [[PaginationViewController alloc]initWithChildControllers:@[vc1, vc2, vc3]];
             [self.navigationController pushViewController:pvc animated:YES];
+            
             break;
         }
         case 1:
@@ -85,6 +87,13 @@
             
             break;
         }
+        case 4:
+        {
+            ApiManagerTestController *vc = [[ApiManagerTestController alloc]init];
+            [self.navigationController pushViewController:vc animated:YES];
+            
+            break;
+        }
         default:
             break;
     }
@@ -93,7 +102,7 @@
 - (NSArray *)datas
 {
     if (_datas == nil) {
-        _datas = @[@"分页导航", @"悬浮Tab效果", @"分类视图", @"检测人脸/二维码/条码"];
+        _datas = @[@"分页导航", @"悬浮Tab效果", @"分类视图", @"检测人脸/二维码/条码", @"网络框架"];
     }
     return _datas;
 }

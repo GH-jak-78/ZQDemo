@@ -59,6 +59,9 @@
 		D7C1A0E41D7FC314006C8EA7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7C1A0E21D7FC314006C8EA7 /* LaunchScreen.storyboard */; };
 		D7C979EB1E1F684300D367E3 /* ZQPictureRotator.m in Sources */ = {isa = PBXBuildFile; fileRef = D7C979EA1E1F684300D367E3 /* ZQPictureRotator.m */; };
 		D7D205CA1E012525008DD758 /* ZQDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = D7D205C91E012525008DD758 /* ZQDataSource.m */; };
+		D7FCCADC1E24AC180045E6D9 /* ApiManagerTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7FCCADB1E24AC180045E6D9 /* ApiManagerTestController.m */; };
+		D7FCCADF1E24AE1C0045E6D9 /* LHYPublicApiManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D7FCCADE1E24AE1C0045E6D9 /* LHYPublicApiManager.m */; };
+		D7FCCAE21E24AE7F0045E6D9 /* LHYMyPointApiManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D7FCCAE11E24AE7F0045E6D9 /* LHYMyPointApiManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -171,6 +174,12 @@
 		D7C979EA1E1F684300D367E3 /* ZQPictureRotator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZQPictureRotator.m; sourceTree = "<group>"; };
 		D7D205C81E012525008DD758 /* ZQDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZQDataSource.h; sourceTree = "<group>"; };
 		D7D205C91E012525008DD758 /* ZQDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZQDataSource.m; sourceTree = "<group>"; };
+		D7FCCADA1E24AC180045E6D9 /* ApiManagerTestController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApiManagerTestController.h; sourceTree = "<group>"; };
+		D7FCCADB1E24AC180045E6D9 /* ApiManagerTestController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApiManagerTestController.m; sourceTree = "<group>"; };
+		D7FCCADD1E24AE1C0045E6D9 /* LHYPublicApiManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHYPublicApiManager.h; sourceTree = "<group>"; };
+		D7FCCADE1E24AE1C0045E6D9 /* LHYPublicApiManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHYPublicApiManager.m; sourceTree = "<group>"; };
+		D7FCCAE01E24AE7F0045E6D9 /* LHYMyPointApiManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHYMyPointApiManager.h; sourceTree = "<group>"; };
+		D7FCCAE11E24AE7F0045E6D9 /* LHYMyPointApiManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHYMyPointApiManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -379,23 +388,7 @@
 				D79BD4C21D8790AF00130D64 /* ZQClassesView */,
 				D7C979E81E1F684300D367E3 /* ZQPictureRotator */,
 				D79047AC1D8281D200076041 /* ZQPaginationController */,
-				D7C1A0D71D7FC314006C8EA7 /* AppDelegate.h */,
-				D7C1A0D81D7FC314006C8EA7 /* AppDelegate.m */,
-				D7C1A0DA1D7FC314006C8EA7 /* ViewController.h */,
-				D7C1A0DB1D7FC314006C8EA7 /* ViewController.m */,
-				D7A174D51D86459400927412 /* TableViewController.h */,
-				D7A174D61D86459400927412 /* TableViewController.m */,
-				D7D205C81E012525008DD758 /* ZQDataSource.h */,
-				D7D205C91E012525008DD758 /* ZQDataSource.m */,
-				D79047B11D82A31C00076041 /* PaginationViewController.h */,
-				D79047B21D82A31C00076041 /* PaginationViewController.m */,
-				D7A174D21D86445C00927412 /* InterLockViewController.h */,
-				D7A174D31D86445C00927412 /* InterLockViewController.m */,
-				D79BD4C61D879A7A00130D64 /* ClassesViewController.h */,
-				D79BD4C71D879A7A00130D64 /* ClassesViewController.m */,
-				D76047551D8E616F0079F4B5 /* DetectController.h */,
-				D76047561D8E616F0079F4B5 /* DetectController.m */,
-				D7C1A0DD1D7FC314006C8EA7 /* Main.storyboard */,
+				D7FCCAE31E24AFD00045E6D9 /* Main */,
 				D7C1A0E01D7FC314006C8EA7 /* Assets.xcassets */,
 				D7C1A0E21D7FC314006C8EA7 /* LaunchScreen.storyboard */,
 				D7C1A0E51D7FC314006C8EA7 /* Info.plist */,
@@ -419,6 +412,36 @@
 				D7C979EA1E1F684300D367E3 /* ZQPictureRotator.m */,
 			);
 			path = ZQPictureRotator;
+			sourceTree = "<group>";
+		};
+		D7FCCAE31E24AFD00045E6D9 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				D7C1A0D71D7FC314006C8EA7 /* AppDelegate.h */,
+				D7C1A0D81D7FC314006C8EA7 /* AppDelegate.m */,
+				D7C1A0DA1D7FC314006C8EA7 /* ViewController.h */,
+				D7C1A0DB1D7FC314006C8EA7 /* ViewController.m */,
+				D7A174D51D86459400927412 /* TableViewController.h */,
+				D7A174D61D86459400927412 /* TableViewController.m */,
+				D7D205C81E012525008DD758 /* ZQDataSource.h */,
+				D7D205C91E012525008DD758 /* ZQDataSource.m */,
+				D79047B11D82A31C00076041 /* PaginationViewController.h */,
+				D79047B21D82A31C00076041 /* PaginationViewController.m */,
+				D7A174D21D86445C00927412 /* InterLockViewController.h */,
+				D7A174D31D86445C00927412 /* InterLockViewController.m */,
+				D79BD4C61D879A7A00130D64 /* ClassesViewController.h */,
+				D79BD4C71D879A7A00130D64 /* ClassesViewController.m */,
+				D76047551D8E616F0079F4B5 /* DetectController.h */,
+				D76047561D8E616F0079F4B5 /* DetectController.m */,
+				D7FCCADA1E24AC180045E6D9 /* ApiManagerTestController.h */,
+				D7FCCADB1E24AC180045E6D9 /* ApiManagerTestController.m */,
+				D7FCCADD1E24AE1C0045E6D9 /* LHYPublicApiManager.h */,
+				D7FCCADE1E24AE1C0045E6D9 /* LHYPublicApiManager.m */,
+				D7FCCAE01E24AE7F0045E6D9 /* LHYMyPointApiManager.h */,
+				D7FCCAE11E24AE7F0045E6D9 /* LHYMyPointApiManager.m */,
+				D7C1A0DD1D7FC314006C8EA7 /* Main.storyboard */,
+			);
+			name = Main;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -501,12 +524,14 @@
 				D79E4A611DEC079400F5464A /* AFURLResponseSerialization.m in Sources */,
 				D79047D51D82AFCD00076041 /* MASViewAttribute.m in Sources */,
 				D79E4A801DEC07BF00F5464A /* UIActivityIndicatorView+AFNetworking.m in Sources */,
+				D7FCCADF1E24AE1C0045E6D9 /* LHYPublicApiManager.m in Sources */,
 				D79E4A671DEC079400F5464A /* FMResultSet.m in Sources */,
 				D7A174D41D86445C00927412 /* InterLockViewController.m in Sources */,
 				D79047DA1D82AFCD00076041 /* ViewController+MASAdditions.m in Sources */,
 				D79047D71D82AFCD00076041 /* NSArray+MASAdditions.m in Sources */,
 				D79E4A421DEC076D00F5464A /* ZQBaseApiManager.m in Sources */,
 				D79E4A661DEC079400F5464A /* FMDatabaseQueue.m in Sources */,
+				D7FCCADC1E24AC180045E6D9 /* ApiManagerTestController.m in Sources */,
 				D79047B31D82A31C00076041 /* PaginationViewController.m in Sources */,
 				D76047571D8E616F0079F4B5 /* DetectController.m in Sources */,
 				D79047D61D82AFCD00076041 /* MASViewConstraint.m in Sources */,
@@ -520,6 +545,7 @@
 				D7A174DB1D869AF800927412 /* UINavigationBar+BackgroundAlpha.m in Sources */,
 				D79E4A831DEC07BF00F5464A /* UIProgressView+AFNetworking.m in Sources */,
 				D79047D91D82AFCD00076041 /* View+MASAdditions.m in Sources */,
+				D7FCCAE21E24AE7F0045E6D9 /* LHYMyPointApiManager.m in Sources */,
 				D79047D11D82AFCD00076041 /* MASCompositeConstraint.m in Sources */,
 				D79047D81D82AFCD00076041 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				D7D205CA1E012525008DD758 /* ZQDataSource.m in Sources */,

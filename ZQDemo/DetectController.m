@@ -27,7 +27,7 @@
     
     self.detect = [[ZQDetect alloc]initWithDetectTypes:@[AVMetadataObjectTypeQRCode, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode128Code]];
     self.detect.delegate = self;
-    self.detect.detectRect = CGRectMake((375 - 200), 100, 200, 100);
+    self.detect.detectRect = CGRectMake(([UIScreen mainScreen].bounds.size.width - 200) * 0.5, 200, 200, 200);
     self.detect.cameraPosition = ZQCameraPositionBack;
     self.detect.detectView.backgroundColor = [UIColor redColor];
     

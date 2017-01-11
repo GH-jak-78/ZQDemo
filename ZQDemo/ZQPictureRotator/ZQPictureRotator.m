@@ -7,6 +7,7 @@
 //
 
 #import "ZQPictureRotator.h"
+#import "UIKit+AFNetworking.h"
 
 @interface ZQPictureCell : UICollectionViewCell
 
@@ -63,7 +64,7 @@
 
 - (void)dealloc
 {
-    NSLog(@"ZQPictureRotator-dealloc");
+//    NSLog(@"ZQPictureRotator-dealloc");
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -191,7 +192,6 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     NSInteger page = scrollView.contentOffset.x / scrollView.frame.size.width;
-    NSLog(@"%zd", page);
     NSInteger index = page % self.totalPage;
     if (page <= self.totalPage || page >= self.totalPage * 9) {
         [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.totalPage * 3 + index inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
@@ -228,7 +228,7 @@
 {
     NSString *imageName = self.pictures[index];
     if ([imageName hasPrefix:@"http://"] || [imageName hasPrefix:@"https://"]) {
-//        [imageView sd_setImageWithURL:[NSURL URLWithString:imageName] placeholderImage:self.placeholderImage];
+        [imageView setImageWithURL:[NSURL URLWithString:imageName] placeholderImage:self.placeholderImage];
     }
     else {
         imageView.image = [UIImage imageNamed:imageName];

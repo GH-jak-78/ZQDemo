@@ -1,9 +1,3 @@
-//
-//  ZQApiManager.m
-//
-//  Created by ZhaoQu on 16/9/27.
-//  Copyright © 2016年 GZ Leihou Software Development CO.,LTD. All rights reserved.
-//
 
 #import "ZQApiManager.h"
 #import "UIKit+AFNetworking.h"
@@ -12,8 +6,6 @@ NSString * const ZQNetStatusKey = @"ZQNetStatusKey";
 NSString * const ZQNetReachabilityStatusNotification = @"ZQNetReachabilityStatusNotification";
 
 NSString * const ZQApiErrorDomain = @"ZQApiErrorDomain";
-NSString * const ZQApiErrorCodeKey = @"ZQApiErrorCodeKey";
-NSString * const ZQApiErrorMessageKey = @"ZQApiErrorMessageKey";
 
 @interface ZQApiManager ()
 
@@ -61,11 +53,17 @@ static ZQApiManager *apiManager;
 - (AFHTTPSessionManager *)manager
 {
     if (_manager == nil) {
-        _manager = [AFHTTPSessionManager manager];
+        
+        if (_baseURLString) {
+            _manager = [[AFHTTPSessionManager alloc]initWithBaseURL:[NSURL URLWithString:_baseURLString]];
+        }
+        else {
+            _manager = [AFHTTPSessionManager manager];
+        }
         _manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html", @"text/json", @"application/json", nil];
         [_manager.requestSerializer setValue:@"ZQ" forHTTPHeaderField:@"X-RNCache"];
         
-        _shareTimeoutInterval = _manager.requestSerializer.timeoutInterval;
+        _shareTimeoutInterval = 20.0;
         [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
         [[ZQApiManager shareApiManager] startMonitoring];
     }
@@ -148,7 +146,7 @@ static ZQApiManager *apiManager;
 
 - (NSURLSessionDataTask *)post:(NSString *)url
                         params:(id)params
-     constructingBodyWithBlock:(void (^)(id<ZQMultipartFormData> formData))block
+                 formDataBlock:(void (^)(id<ZQMultipartFormData> formData))block
                       progress:(void (^)(NSProgress *uploadProgress))progress
                        success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
                        failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
@@ -168,7 +166,7 @@ static ZQApiManager *apiManager;
 
 - (void)cancelAllRequest
 {
-    [self.manager.operationQueue cancelAllOperations];
+    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
 }
 
 - (NSSet *)acceptableContentTypes
@@ -180,5 +178,11 @@ static ZQApiManager *apiManager;
     self.manager.responseSerializer.acceptableContentTypes = acceptableContentTypes;
 }
 
+- (void)setBaseURLString:(NSString *)baseURLString
+{
+    _baseURLString = [baseURLString copy];
+    
+    _manager = nil;
+}
 
 @end

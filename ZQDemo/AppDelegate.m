@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "ZQApiManager.h"
+#import "LHYPublicApiManager.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +19,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    [ZQApiManager shareApiManager].publicHandle = [[LHYPublicApiManager alloc]init];
+    [ZQApiManager shareApiManager].baseURLString = @"http://app.tt.oolagongyi.com/v1/";
+    [ZQApiManager shareApiManager].shareTimeoutInterval = 20.0;
     return YES;
 }
 
