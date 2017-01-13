@@ -71,7 +71,7 @@
         }
         case 2:
         {
-            [self.getMyPointApiManager cancelCurrentTasks];
+            [self.getMyPointApiManager cancelAllTasks];
             break;
         }
         case 3:

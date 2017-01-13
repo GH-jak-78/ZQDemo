@@ -63,8 +63,8 @@ static ZQApiManager *apiManager;
         _manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html", @"text/json", @"application/json", nil];
         [_manager.requestSerializer setValue:@"ZQ" forHTTPHeaderField:@"X-RNCache"];
         
-        _shareTimeoutInterval = 20.0;
-        [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+        _shareTimeoutInterval = _manager.requestSerializer.timeoutInterval = 20.0;
+        self.networkActivityIndicatorEnabled = YES;
         [[ZQApiManager shareApiManager] startMonitoring];
     }
     return _manager;
@@ -75,6 +75,8 @@ static ZQApiManager *apiManager;
     if (_database == nil) {
         _database = [FMDatabase databaseWithPath:ZQDatabasePath];
         [_database open];
+        
+        [_database executeStatements:@"CREATE TABLE IF NOT EXISTS t_auto_task_cache (task_id text PRIMARY KEY NOT NULL, task_date integer NOT NULL, task_cache blob NOT NULL);"];
     }
     return _database;
 }
@@ -82,7 +84,9 @@ static ZQApiManager *apiManager;
 - (void)setPublicHandle:(id<ZQApiManagerProtocol>)publicHandle
 {
     _publicHandle = publicHandle;
-    
+    if ([self.publicHandle respondsToSelector:@selector(initialize)]) {
+        [self.publicHandle initialize];
+    }
     if ([self.publicHandle respondsToSelector:@selector(configureDatabase:)]) {
         [self.publicHandle configureDatabase:self.database];
     }
@@ -183,6 +187,23 @@ static ZQApiManager *apiManager;
     _baseURLString = [baseURLString copy];
     
     _manager = nil;
+}
+
+- (void)setNetworkActivityIndicatorEnabled:(BOOL)networkActivityIndicatorEnabled
+{
+    _networkActivityIndicatorEnabled = networkActivityIndicatorEnabled;
+    
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = networkActivityIndicatorEnabled;
+}
+
+- (NSTimeInterval)currentTimeoutInterval
+{
+    return self.manager.requestSerializer.timeoutInterval;
+}
+
+- (void)setCurrentTimeoutInterval:(NSTimeInterval)currentTimeoutInterval
+{
+    self.manager.requestSerializer.timeoutInterval = currentTimeoutInterval;
 }
 
 @end

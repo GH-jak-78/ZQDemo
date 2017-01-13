@@ -1,7 +1,10 @@
 
 #import "ZQBaseApiManager.h"
+#import <CommonCrypto/CommonDigest.h>
 
 @interface ZQApiTask ()
+
+@property (copy, nonatomic) NSString *taskIdentifier;
 
 @property (copy, nonatomic) NSString *urlString;
 
@@ -19,11 +22,18 @@
 
 @property (weak, nonatomic) NSURLSessionDataTask *task;
 @property (weak, nonatomic) ZQBaseApiManager *apiManager;
+/**
+ *  判断请求任务列表是否存在和当前请求任务相同taskIdentifier的请求任务
+ *
+ *  @param tasks 请求任务
+ *
+ *  @return 返回是否存在
+ */
+- (BOOL)isExistInTasks:(NSArray<ZQApiTask *> *)tasks;
 
 @end
 
 @implementation ZQApiTask
-
 /**
  *  取消请求
  */
@@ -39,6 +49,18 @@
     return [self.apiManager resumeWithTask:self];
 }
 
+- (BOOL)isExistInTasks:(NSArray<ZQApiTask *> *)tasks
+{
+    BOOL exist = NO;
+    for (ZQApiTask *task in tasks) {
+        if ([task.taskIdentifier isEqualToString:self.taskIdentifier]) {
+            exist = YES;
+            break;
+        }
+    }
+    return exist;
+}
+
 @end
 
 
@@ -50,18 +72,22 @@
     __weak id<ZQApiManagerProtocol> child;
     
     /**
-     *  当前请求任务列表
+     *  是否存在网络监听器
      */
-    NSMutableDictionary<NSURLSessionDataTask *, ZQApiTask *> *currentTasks;
-    /**
-     *  当前请求任务列表
-     */
-    NSMutableArray<ZQApiTask *> *waitingTasks;
-    /**
-     *  自动请求任务列表
-     */
-    NSMutableArray<ZQApiTask *> *autoResumeTasks;
+    BOOL existNetObserver;
 }
+/**
+ *  当前请求任务列表
+ */
+@property (strong, nonatomic) NSMutableDictionary<NSURLSessionDataTask *, ZQApiTask *> *currentTasks;
+/**
+ *  等待请求任务列表
+ */
+@property (strong, nonatomic) NSMutableArray<ZQApiTask *> *waitingTasks;
+/**
+ *  自动请求任务列表
+ */
+@property (strong, nonatomic) NSMutableArray<ZQApiTask *> *autoResumeTasks;
 
 @end
 
@@ -83,15 +109,17 @@
         child = (id<ZQApiManagerProtocol>)self;
         
         params = [NSMutableDictionary dictionary];
-        currentTasks = [NSMutableDictionary<NSURLSessionDataTask *, ZQApiTask *> dictionary];
-        waitingTasks = [NSMutableArray<ZQApiTask *> array];
-        autoResumeTasks = [NSMutableArray<ZQApiTask *> array];
+        self.currentTasks = [NSMutableDictionary<NSURLSessionDataTask *, ZQApiTask *> dictionary];
+
         requestType = ZQApiRequestTypePost;
         timeoutInterval = [ZQApiManager shareApiManager].shareTimeoutInterval;
+        
+        if ([child respondsToSelector:@selector(initialize)]) {
+            [child initialize];
+        }
         if ([child respondsToSelector:@selector(configureDatabase:)]) {
             [child configureDatabase:[ZQApiManager shareApiManager].database];
         }
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(netReachabilityStatusChanged:) name:ZQNetReachabilityStatusNotification object:nil];
     }
     else {
         // ZQBaseApiManager为抽象类,不能直接实例化;
@@ -115,11 +143,24 @@
     return [[self alloc]initWithSuccess:success failure:failure];
 }
 
+#pragma mark - 主要逻辑方法
+
 /**
  *  新请求起飞点
  */
 - (ZQApiTask *)loadData
 {
+    // 添加网络监听
+    if (autoResume && !existNetObserver) {
+        existNetObserver = YES;
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(netReachabilityStatusDidChanged:) name:ZQNetReachabilityStatusNotification object:nil];
+    }
+    // 去掉网络监听
+    if (!autoResume && existNetObserver) {
+        existNetObserver = NO;
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
+    
     ZQApiTask *apiTask = [[ZQApiTask alloc]init];
     apiTask.urlString = urlString;
     apiTask.state = ZQApiStateDefault;
@@ -159,19 +200,19 @@
         case ZQApiRequestPolicyParallel:
             break;
         case ZQApiRequestPolicyCancelPrevious:
-            if (currentTasks.count || waitingTasks.count) {
-                [self cancelCurrentTasks];
+            if (self.currentTasks.count) {
+                [self cancelAllTasks];
             }
             break;
         case ZQApiRequestPolicyCancelCurrent:
-            if (currentTasks.count || waitingTasks.count) {
+            if (self.currentTasks.count) {
                 [apiTask cancel];
                 return;
             }
             break;
         case ZQApiRequestPolicySerialize:
-            if (currentTasks.count || waitingTasks.count) {
-                [waitingTasks addObject:apiTask];
+            if (self.currentTasks.count || self.waitingTasks.count) {
+                [self.waitingTasks addObject:apiTask];
                 return;
             }
             break;
@@ -180,7 +221,7 @@
 }
 
 /**
- *  参数配置/认证
+ *  参数配置/验证
  */
 - (void)validateParamsWithTask:(ZQApiTask *)apiTask {
     
@@ -206,6 +247,11 @@
     }
 
     apiTask.params =[params copy];
+    
+    if ((autoCache || autoResume) && !apiTask.taskIdentifier) {
+        [self makeTaskIdentifier:apiTask];
+    }
+    
     [self cachePolicyWithTask:apiTask];
 }
 
@@ -213,25 +259,34 @@
  *  缓存策略
  *
  *  1.无缓存策略:所有请求由网络发起
- *  2.有缓存策略:
- *      3.无网络时:加载本地缓存
- *      4.有网络时:
- *          5.设置了下次访问方式:按设置访问网络或缓存
- *          6.没有设置了下次访问方式:按优先访问网络(默认)或缓存
+ *  2.有缓存策略:(当无缓存数据时请求网络)
+ *      3.开启了自动缓存同时在优先自动缓存时间内:优先加载自动缓存
+ *          4.无网络时:
+ *              5.读取协议缓存(优先)
+ *              6.读取自动缓存
+ *              7.请求网络
+ *          8.有网络时:
+ *              9.设置了下次访问方式:按设置访问网络或缓存
+ *              10.没有设置了下次访问方式:按优先访问网络(默认)或缓存
  */
 - (void)cachePolicyWithTask:(ZQApiTask *)apiTask
 {
-    // 网络请求标记
-    BOOL netRequesTag;
-    // 是否实现了读取缓存方法
-    if (![child respondsToSelector:@selector(readCacheWithDatabase:task:isNeedReform:)]) {
-        netRequesTag = YES;
+    // 是否实现了读取缓存协议或开启了自动缓存
+    if (![child respondsToSelector:@selector(readCacheWithDatabase:task:isNeedReform:)] && !autoCache) {
         [self sendRequestWithTask:apiTask];
         return;
     }
+    // 在优先自动缓存时间内加载自动缓存
+    if (autoCache && preferredAutoCacheTimeInterval > 0) {
+        if ([self readAutoCacheWithTask:apiTask]) {
+            [self reformResponseObjectWithTask:apiTask];
+            return;
+        }
+    }
     
-    // 网络状态
-    if ([ZQApiManager shareApiManager].netReachabilityStatus == ZQNetReachabilityStatusNotReachable) {
+    // 网络请求标记
+    BOOL netRequesTag;
+    if ([ZQApiManager shareApiManager].netReachabilityStatus == ZQNetReachabilityStatusNotReachable) { // 无网络时
         netRequesTag = NO;
     }
     else {
@@ -249,16 +304,12 @@
                 break;
         }
     }
-    
-    if (netRequesTag) {
-        [self sendRequestWithTask:apiTask];
-    }
-    else {
+
+    if (!netRequesTag && [child respondsToSelector:@selector(readCacheWithDatabase:task:isNeedReform:)]) {
         BOOL isNeedReform = YES;
         id cacheData = [child readCacheWithDatabase:[ZQApiManager shareApiManager].database task:apiTask isNeedReform:&isNeedReform];
         if (cacheData) {
             apiTask.dataSourceType = ZQApiDataSourceTypeCache;
-            netRequesTag = NO;
             if (isNeedReform) {
                 apiTask.responseData = cacheData;
                 [self reformResponseObjectWithTask:apiTask];
@@ -267,12 +318,18 @@
                 apiTask.receiveData = cacheData;
                 [self successWithTask:apiTask];
             }
-        }
-        else {
-            netRequesTag = YES;
-            [self sendRequestWithTask:apiTask];
+            return;
         }
     }
+    
+    if (!netRequesTag && autoCache) {
+        if ([self readAutoCacheWithTask:apiTask]) {
+            [self reformResponseObjectWithTask:apiTask];
+            return;
+        }
+    }
+
+    [self sendRequestWithTask:apiTask];
 }
 
 /**
@@ -285,8 +342,8 @@
     if ([ZQApiManager shareApiManager].netReachabilityStatus == ZQNetReachabilityStatusNotReachable) {
         apiTask.state = ZQApiStateNoNetWork;
         apiTask.error = [[NSError alloc]initWithDomain:ZQApiErrorDomain code:ZQApiStateNoNetWork userInfo:@{NSLocalizedDescriptionKey: @"没有网络连接!"}];
-        if (autoResume) {
-            [autoResumeTasks addObject:apiTask];
+        if (autoResume && ![apiTask isExistInTasks:_autoResumeTasks]) {
+            [self.autoResumeTasks addObject:apiTask];
         }
         [self failureWithTask:apiTask];
         return;
@@ -300,13 +357,13 @@
     NSError *(^customError)(NSError *) = ^(NSError *error) {
         
         NSInteger errorCode;
-        if (error.code == -1004 || error.code == -1009) {          // 没有网络
+        if (error.code == NSURLErrorCannotConnectToHost || error.code == NSURLErrorNotConnectedToInternet) {    // 没有网络
             errorCode = ZQApiStateNoNetWork;
         }
-        else if ((error.code == -1001)) {   // 超时
+        else if ((error.code == NSURLErrorTimedOut)) {   // 超时
             errorCode = ZQApiStateTimeout;
         }
-        else if ((error.code == -999)) {    // 请求取消
+        else if ((error.code == NSURLErrorCancelled)) {    // 请求取消
             errorCode = ZQApiStateCancel;
         }
         else {
@@ -319,8 +376,8 @@
     apiTask.state = ZQApiStateLoading;
     
     
-    if ([ZQApiManager shareApiManager].shareTimeoutInterval != timeoutInterval) {
-        [ZQApiManager shareApiManager].manager.requestSerializer.timeoutInterval = timeoutInterval;
+    if ([ZQApiManager shareApiManager].currentTimeoutInterval != timeoutInterval) {
+        [ZQApiManager shareApiManager].currentTimeoutInterval = timeoutInterval;
     }
     NSURLSessionDataTask *task = nil;
     // 发起请求
@@ -328,13 +385,13 @@
     {
         case ZQApiRequestTypeGet: {
             task = [[ZQApiManager shareApiManager] get:apiTask.urlString params:apiTask.params success:^(NSURLSessionDataTask *task, id responseObject) {
-                ZQApiTask *apiTask = currentTasks[task];
-                [currentTasks removeObjectForKey:task];
+                ZQApiTask *apiTask = self.currentTasks[task];
+                [self.currentTasks removeObjectForKey:task];
                 apiTask.responseData = responseObject;
                 [self validateResponseObjectWithTask:apiTask];
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                ZQApiTask *apiTask = currentTasks[task];
-                [currentTasks removeObjectForKey:task];
+                ZQApiTask *apiTask = self.currentTasks[task];
+                [self.currentTasks removeObjectForKey:task];
                 apiTask.error = customError(error);
                 [self failureWithTask:apiTask];
             }];
@@ -343,13 +400,13 @@
         case ZQApiRequestTypePost: {
             
             task = [[ZQApiManager shareApiManager] post:apiTask.urlString params:apiTask.params success:^(NSURLSessionDataTask *task, id responseObject) {
-                ZQApiTask *apiTask = currentTasks[task];
-                [currentTasks removeObjectForKey:task];
+                ZQApiTask *apiTask = self.currentTasks[task];
+                [self.currentTasks removeObjectForKey:task];
                 apiTask.responseData = responseObject;
                 [self validateResponseObjectWithTask:apiTask];
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                ZQApiTask *apiTask = currentTasks[task];
-                [currentTasks removeObjectForKey:task];
+                ZQApiTask *apiTask = self.currentTasks[task];
+                [self.currentTasks removeObjectForKey:task];
                 apiTask.error = customError(error);
                 [self failureWithTask:apiTask];
             }];
@@ -368,13 +425,13 @@
                     self.progressBlock(uploadProgress);
                 }
             } success:^(NSURLSessionDataTask *task, id responseObject) {
-                ZQApiTask *apiTask = currentTasks[task];
-                [currentTasks removeObjectForKey:task];
+                ZQApiTask *apiTask = self.currentTasks[task];
+                [self.currentTasks removeObjectForKey:task];
                 apiTask.responseData = responseObject;
                 [self validateResponseObjectWithTask:apiTask];
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                ZQApiTask *apiTask = currentTasks[task];
-                [currentTasks removeObjectForKey:task];
+                ZQApiTask *apiTask = self.currentTasks[task];
+                [self.currentTasks removeObjectForKey:task];
                 apiTask.error = customError(error);
                 [self failureWithTask:apiTask];
             }];
@@ -382,7 +439,7 @@
         }
     }
     apiTask.task = task;
-    currentTasks[task] = apiTask;
+    self.currentTasks[task] = apiTask;
 }
 
 
@@ -431,8 +488,12 @@
     apiTask.state = ZQApiStateSuccess;
     apiTask.error = nil;
     
-    if (apiTask.dataSourceType == ZQApiDataSourceTypeCache && [child respondsToSelector:@selector(saveCacheWithDatabase:task:)]) {
+    if (apiTask.dataSourceType == ZQApiDataSourceTypeNet && [child respondsToSelector:@selector(saveCacheWithDatabase:task:)]) {
         [child saveCacheWithDatabase:[ZQApiManager shareApiManager].database task:apiTask];
+    }
+    
+    if (apiTask.dataSourceType == ZQApiDataSourceTypeNet && autoCache) {
+        [self saveAutoCacheWithTask:apiTask];
     }
     
     if ([[ZQApiManager shareApiManager].publicHandle respondsToSelector:@selector(requestDidSuccessWithTask:)]) {
@@ -449,7 +510,7 @@
         [self.delegate apiManager:self didSuccessedWithTask:apiTask];
     }
     
-    [self waitingTasksResume];
+    [self resumeWaitingTasks];
 }
 
 /**
@@ -473,26 +534,41 @@
         [self.delegate apiManager:self didFailedWithTask:apiTask];
     }
     
-    [self waitingTasksResume];
+    [self resumeWaitingTasks];
 }
 /**
- *  开启等待请求任务
+ *  启动等待列表的请求任务
  */
-- (void)waitingTasksResume
+- (void)resumeWaitingTasks
 {
-    if (waitingTasks.count) {
-        ZQApiTask *firstTask = waitingTasks.firstObject;
-        [waitingTasks removeObject:firstTask];
+    if (requestType == ZQApiRequestPolicySerialize) {
+        ZQApiTask *firstTask = self.waitingTasks.firstObject;
+        [self.waitingTasks removeObject:firstTask];
         [self validateParamsWithTask:firstTask];
     }
 }
 /**
- *  取消当前请求任务(包含在等待列表的请求任务)
+ *  网络状态改变时操作自动重启列表的请求任务
  */
-- (void)cancelCurrentTasks
+- (void)netReachabilityStatusDidChanged:(NSNotification *)notification
 {
-    [waitingTasks makeObjectsPerformSelector:@selector(cancel)];
-    [currentTasks.allKeys makeObjectsPerformSelector:@selector(cancel)];
+    ZQNetReachabilityStatus status = [notification.userInfo[ZQNetStatusKey] integerValue];
+    if (status == ZQNetReachabilityStatusReachableViaWiFi || status == ZQNetReachabilityStatusReachableViaWWAN) {
+        [_autoResumeTasks makeObjectsPerformSelector:@selector(resume)];
+        [_autoResumeTasks removeAllObjects];
+    }
+}
+
+#pragma mark - 公有方法
+
+/**
+ *  取消所有任务(包含在等待列表的请求任务)
+ */
+- (void)cancelAllTasks
+{
+    [_waitingTasks makeObjectsPerformSelector:@selector(cancel)];
+    [_currentTasks.allKeys makeObjectsPerformSelector:@selector(cancel)];
+    [_autoResumeTasks removeAllObjects];
 }
 
 /**
@@ -500,30 +576,100 @@
  */
 - (void)cancelWithTask:(ZQApiTask *)apiTask
 {
-    if ([waitingTasks containsObject:apiTask] || apiTask.state == ZQApiStateDefault) {
-        [waitingTasks removeObject:apiTask];
+    if ([_waitingTasks containsObject:apiTask] || apiTask.state == ZQApiStateDefault) {
+        [_waitingTasks removeObject:apiTask];
         apiTask.state = ZQApiStateCancel;
         apiTask.error = [NSError errorWithDomain:ZQApiErrorDomain code:ZQApiStateCancel userInfo:@{NSLocalizedDescriptionKey: @"请求被取消"}];
         [self failureWithTask:apiTask];
         return;
     }
-    if (apiTask.task && currentTasks[apiTask.task]) {
+    if (apiTask.task && _currentTasks[apiTask.task]) {
         [apiTask.task cancel];
     }
 }
+
+#pragma mark - 私有方法
+
 /**
- *  启动autoResume请求任务
+ *  读取自动缓存
+ *
+ *  @param apiTask 请求任务
+ *
+ *  @return 返回是否读取成功
  */
-- (void)netReachabilityStatusChanged:(NSNotification *)notification
+- (BOOL)readAutoCacheWithTask:(ZQApiTask *)apiTask
 {
-    if (!autoResume) {
-        return;
+    FMResultSet *set = [[ZQApiManager shareApiManager].database executeQuery:@"SELECT * FROM t_auto_task_cache WHERE task_id = ?;", apiTask.taskIdentifier];
+    if (set.next) {
+        NSData *taskCache = [set objectForColumnName:@"task_cache"];
+        NSInteger taskDate = [set intForColumn:@"task_date"];
+        if (preferredAutoCacheTimeInterval == 0 || [NSDate date].timeIntervalSince1970 - taskDate <= preferredAutoCacheTimeInterval) {
+            apiTask.responseData = [NSKeyedUnarchiver unarchiveObjectWithData:taskCache];
+            apiTask.dataSourceType = ZQApiDataSourceTypeCache;
+            return YES;
+        }
     }
-    ZQNetReachabilityStatus status = [notification.userInfo[ZQNetStatusKey] integerValue];
-    if (status == ZQNetReachabilityStatusReachableViaWiFi || status == ZQNetReachabilityStatusReachableViaWWAN) {
-        [autoResumeTasks makeObjectsPerformSelector:@selector(resume)];
-        [autoResumeTasks removeAllObjects];
+    return NO;
+}
+/**
+ *  保存自动缓存
+ */
+- (void)saveAutoCacheWithTask:(ZQApiTask *)task
+{
+    NSData * taskCache = [NSKeyedArchiver archivedDataWithRootObject:task.responseData];
+    
+    [[ZQApiManager shareApiManager].database executeUpdate:@"REPLACE INTO t_auto_task_cache (task_id, task_date, task_cache) VALUES (?,?,?);", task.taskIdentifier, @((int)([NSDate date].timeIntervalSince1970)), taskCache];
+}
+
+/**
+ *  生成TaskIdentifier
+ */
+- (void)makeTaskIdentifier:(ZQApiTask *)apiTask
+{
+    if (taskIdentifierBlock) {
+        apiTask.taskIdentifier = [self md5:taskIdentifierBlock(apiTask)];
+    }
+    else {
+        NSMutableString * taskIdentifierString = [NSMutableString stringWithFormat:@"ZQApiManager&%@", apiTask.urlString];
+        NSMutableArray *array = [apiTask.params.allKeys mutableCopy];
+        [array sortUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+            return [obj1 compare:obj2];
+        }];
+        [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [taskIdentifierString appendFormat:@"&%@=%@", obj, apiTask.params[obj]];
+        }];
+        apiTask.taskIdentifier = [self md5:taskIdentifierString];
     }
 }
 
+- (NSString *)md5:(NSString *)string
+{
+    const char * str = [string UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(str, (CC_LONG)strlen(str), result);
+    NSMutableString *ret = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH];
+    
+    for(int i = 0; i<CC_MD5_DIGEST_LENGTH; i++)
+    {
+        [ret appendFormat:@"%02x",result[i]];
+    }
+    return [ret copy];
+}
+
+#pragma mark - getter方法
+
+- (NSMutableArray<ZQApiTask *> *)waitingTasks
+{
+    if (_waitingTasks == nil) {
+        _waitingTasks = [NSMutableArray<ZQApiTask *> array];
+    }
+    return _waitingTasks;
+}
+- (NSMutableArray<ZQApiTask *> *)autoResumeTasks
+{
+    if (_autoResumeTasks == nil) {
+        _autoResumeTasks = [NSMutableArray<ZQApiTask *> array];
+    }
+    return _autoResumeTasks;
+}
 @end

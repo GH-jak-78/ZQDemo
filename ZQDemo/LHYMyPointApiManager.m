@@ -10,26 +10,25 @@
 
 @implementation LHYMyPointApiManager
 
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    
+- (void)initialize
+{
     urlString = @"my/my-credits";
-//    requestType = ZQApiRequestTypePostFile;
     
-    return self;
+    // requestType = ZQApiRequestTypePostFile;
+    [self setProgressBlock:^(NSProgress *uploadProgress) {
+        NSLog(@"%f", uploadProgress.fractionCompleted);
+    }];
+    autoCache = YES;
+    preferredAutoCacheTimeInterval = 5.0;
+    taskIdentifierBlock = ^(ZQApiTask *task) {
+        return task.urlString;
+    };
 }
 
 - (ZQApiTask *)loadData
 {
     params[@"token"] = @"d05912a76843cc391d8960fc1c058a2d";
-    
-    [self setProgressBlock:^(NSProgress *uploadProgress) {
-        NSLog(@"%f", uploadProgress.fractionCompleted);
-    }];
-    autoResume = YES;
+
     return [super loadData];
 }
 

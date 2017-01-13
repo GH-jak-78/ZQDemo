@@ -38,6 +38,18 @@
      *  无网络失败时,网络正常后自动重新请求(默认为NO)
      */
     BOOL autoResume;
+    /**
+     *  自动缓存请求数据(自动缓存和重写协议方法缓存同时开启时,优先重写协议方法缓存)
+     */
+    BOOL autoCache;
+    /**
+     *  优先访问自动缓存时间(默认为0,表示按preferredRequestSourceType访问)
+     */
+    NSTimeInterval preferredAutoCacheTimeInterval;
+    /**
+     *  taskIdentifier生成回调Block(block返回接口唯一字符串:例如:urlString+参数值列表,不设置时有默认为:urlString&key=value&...)
+     */
+    NSString *(^taskIdentifierBlock)(ZQApiTask *task);
 }
 
 /**
@@ -69,7 +81,7 @@
 /**
  *  取消当前任务列表的请求
  */
-- (void)cancelCurrentTasks;
+- (void)cancelAllTasks;
 /**
  *  取消某个请求
  */

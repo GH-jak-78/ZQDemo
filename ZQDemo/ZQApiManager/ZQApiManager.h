@@ -3,6 +3,9 @@
  *
  *  用法:从ZQBaseApiManager继承出一个必须遵守ZQApiManagerProtocol协议的接口类,由loadData()发起请求
  *
+ *  注意:
+ *      1.同时实现协议缓存和开启自动缓存的情况下,如在优先缓存时间内则读取自动缓存,不在其内则读取协议缓存.
+ *
  */
 
 #import <Foundation/Foundation.h>
@@ -69,8 +72,8 @@ typedef NS_ENUM (NSInteger, ZQApiDataSourceType)
 typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
 {
     ZQApiRequestPolicyParallel,         // 并发请求(默认)
-    ZQApiRequestPolicyCancelPrevious,   // 并发时取消之前请求
     ZQApiRequestPolicyCancelCurrent,    // 并发时取消当前请求
+    ZQApiRequestPolicyCancelPrevious,   // 并发时取消之前请求
     ZQApiRequestPolicySerialize,        // 并发时串行化(顺序)请求
 };
 
@@ -171,14 +174,10 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
 @protocol ZQApiManagerProtocol <NSObject>
 
 @optional   // 可选的
-
 /**
- *  上传文件
- *
- *  @param formData 上传操作对象 [formData append...]
+ *  ApiManager初始化
  */
-- (void)postFileWithFormData:(id<ZQMultipartFormData>)formData;
-
+- (void)initialize;
 /**
  *  配置参数 (一般用在publicHandle中统一处理参数,接口类可直接用成员变量)
  *
@@ -186,16 +185,6 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
  *  @param task   请求任务
  */
 - (void)configureParams:(NSMutableDictionary *)params withTask:(ZQApiTask *)task;
-
-/**
- *  格式化返回的数据(一般用在模型化)
- *
- *  @param responseObject 请求返回的原数据
- *  @param task 请求任务
- *
- *  @return 格式化后的数据
- */
-- (id)reformResponseData:(id)responseData withTask:(ZQApiTask *)task;
 
 /**
  *  参数验证
@@ -222,6 +211,17 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
  *  @return 返回是否正确
  */
 - (BOOL)isCorrectResponseDataWithTask:(ZQApiTask *)task errorInfo:(NSMutableDictionary *)errorInfo;
+
+/**
+ *  格式化返回的数据(一般用在模型化)
+ *
+ *  @param responseObject 请求返回的原数据
+ *  @param task 请求任务
+ *
+ *  @return 格式化后的数据
+ */
+- (id)reformResponseData:(id)responseData withTask:(ZQApiTask *)task;
+
 /**
  *  请求成功处理
  */
@@ -232,11 +232,18 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
 - (void)requestDidFailureWithTask:(ZQApiTask *)task;
 
 /**
+ *  上传文件
+ *
+ *  @param formData 上传操作对象 [formData append...]
+ */
+- (void)postFileWithFormData:(id<ZQMultipartFormData>)formData;
+
+/**
  *  配置数据库(建表等),一般在publicHandle中处理
  */
 - (void)configureDatabase:(FMDatabase *)database;
 /**
- *  读取缓存
+ *  读取协议缓存
  *
  *  @param database     数据库
  *  @param isNeedReform 返回的缓存是否要reform(默认为YES)
@@ -245,7 +252,7 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
  */
 - (id)readCacheWithDatabase:(FMDatabase *)database task:(ZQApiTask *)task isNeedReform:(BOOL *)isNeedReform;
 /**
- *  将新数据持久化
+ *  保存协议缓存
  *
  *  @param reformData 转换格式后的请求数据
  */
@@ -286,15 +293,23 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
  */
 @property (strong, nonatomic) NSSet *acceptableContentTypes;
 /**
- *  默认请求超时时间
+ *  默认请求超时时间(默认为20.0)
  */
 @property (assign, nonatomic) NSTimeInterval shareTimeoutInterval;
+/**
+ *  当前请求超时时间
+ */
+@property (assign, nonatomic) NSTimeInterval currentTimeoutInterval;
+/**
+ *  网络活动指示器开启状态(默认为YES)
+ */
+@property (assign, nonatomic) BOOL networkActivityIndicatorEnabled;
 /**
  *  取消所有请求
  */
 - (void)cancelAllRequest;
 /**
- *  开始监测网络变化
+ *  开始监测网络变化(默认开启)
  */
 - (void)startMonitoring;
 
