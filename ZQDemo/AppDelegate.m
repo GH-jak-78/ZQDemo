@@ -21,7 +21,7 @@
     // Override point for customization after application launch.
     [ZQApiManager shareApiManager].publicHandle = [[LHYPublicApiManager alloc]init];
     [ZQApiManager shareApiManager].baseURLString = @"http://app.tt.oolagongyi.com/v1/";
-    [ZQApiManager shareApiManager].shareTimeoutInterval = 20.0;
+    [ZQApiManager shareApiManager].publicTimeoutInterval = 20.0;
     return YES;
 }
 

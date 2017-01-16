@@ -10,6 +10,9 @@
 
 @interface LHYMyPointApiManager : ZQBaseApiManager <ZQApiManagerProtocol>
 
+
+
+- (ZQApiTask *)loadDataWithParam:(NSString *)param;
 - (void)changeRequestPolicy:(ZQApiRequestPolicy)apiRequestPolicy;
 
 @end

@@ -54,9 +54,9 @@
     }
 }
 
-- (id)reformResponseData:(id)responseData withTask:(ZQApiTask *)task
+- (id)reformReceiveDataWithTask:(ZQApiTask *)task
 {
-    return responseData[@"info"];
+    return task.receiveData[@"info"];
 }
 
 - (void)requestDidSuccessWithTask:(ZQApiTask *)task

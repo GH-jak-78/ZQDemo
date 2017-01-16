@@ -4,8 +4,8 @@
  *  用法:从ZQBaseApiManager继承出一个必须遵守ZQApiManagerProtocol协议的接口类,由loadData()发起请求
  *
  *  注意:
- *      1.同时实现协议缓存和开启自动缓存的情况下,如在优先缓存时间内则读取自动缓存,不在其内则读取协议缓存.
- *
+ *      1.同时实现协议缓存和开启自动缓存的情况下,在优先缓存时间内则读取自动缓存,不在其内则读取协议缓存,不建议同时使用.
+ *      2.当开启自动缓存或自动重启请求,会生成TaskIdentifier,不想用默认的话,可在taskIdentifierBlock中自定义以标识是否同一请求.
  */
 
 #import <Foundation/Foundation.h>
@@ -175,11 +175,11 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
 
 @optional   // 可选的
 /**
- *  ApiManager初始化
+ *  ApiManager初始化(一般用在初始化urlString,请求方式,请求标识,自动缓存,不变参数等)
  */
 - (void)initialize;
 /**
- *  配置参数 (一般用在publicHandle中统一处理参数,接口类可直接用成员变量)
+ *  配置参数 (一般用在publicHandle中配置公共参数,接口类可直接用成员变量params配置)
  *
  *  @param params 参数字典
  *  @param task   请求任务
@@ -213,15 +213,13 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
 - (BOOL)isCorrectResponseDataWithTask:(ZQApiTask *)task errorInfo:(NSMutableDictionary *)errorInfo;
 
 /**
- *  格式化返回的数据(一般用在模型化)
+ *  格式化返回的数据(一般用在模型化,不实现返回原始数据)
  *
- *  @param responseObject 请求返回的原数据
  *  @param task 请求任务
  *
  *  @return 格式化后的数据
  */
-- (id)reformResponseData:(id)responseData withTask:(ZQApiTask *)task;
-
+- (id)reformReceiveDataWithTask:(ZQApiTask *)task;
 /**
  *  请求成功处理
  */
@@ -291,11 +289,11 @@ typedef NS_ENUM (NSInteger, ZQApiRequestPolicy)
 /**
  *  支持处理的的数据类型,例:@"text/html",@"text/json",@"application/json"等
  */
-@property (strong, nonatomic) NSSet *acceptableContentTypes;
+@property (copy, nonatomic) NSSet *acceptableContentTypes;
 /**
  *  默认请求超时时间(默认为20.0)
  */
-@property (assign, nonatomic) NSTimeInterval shareTimeoutInterval;
+@property (assign, nonatomic) NSTimeInterval publicTimeoutInterval;
 /**
  *  当前请求超时时间
  */

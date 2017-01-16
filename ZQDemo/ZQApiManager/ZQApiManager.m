@@ -63,7 +63,7 @@ static ZQApiManager *apiManager;
         _manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/html", @"text/json", @"application/json", nil];
         [_manager.requestSerializer setValue:@"ZQ" forHTTPHeaderField:@"X-RNCache"];
         
-        _shareTimeoutInterval = _manager.requestSerializer.timeoutInterval = 20.0;
+        _publicTimeoutInterval = _manager.requestSerializer.timeoutInterval = 20.0;
         self.networkActivityIndicatorEnabled = YES;
         [[ZQApiManager shareApiManager] startMonitoring];
     }

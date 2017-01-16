@@ -112,7 +112,7 @@
         self.currentTasks = [NSMutableDictionary<NSURLSessionDataTask *, ZQApiTask *> dictionary];
 
         requestType = ZQApiRequestTypePost;
-        timeoutInterval = [ZQApiManager shareApiManager].shareTimeoutInterval;
+        timeoutInterval = [ZQApiManager shareApiManager].publicTimeoutInterval;
         
         if ([child respondsToSelector:@selector(initialize)]) {
             [child initialize];
@@ -167,6 +167,7 @@
     apiTask.params = [params copy];
     
     apiTask.apiManager = self;
+    
     [self requestPolicyWithTask:apiTask];
     return apiTask;
 }
@@ -468,15 +469,15 @@
  */
 - (void)reformResponseObjectWithTask:(ZQApiTask *)apiTask
 {
-    id reformData = nil;
-    if ([[ZQApiManager shareApiManager].publicHandle respondsToSelector:@selector(reformResponseData:withTask:)]) {
-        reformData = [[ZQApiManager shareApiManager].publicHandle reformResponseData:apiTask.responseData withTask:apiTask];
+    apiTask.receiveData = apiTask.responseData;
+    
+    if ([[ZQApiManager shareApiManager].publicHandle respondsToSelector:@selector(reformReceiveDataWithTask:)]) {
+        apiTask.receiveData = [[ZQApiManager shareApiManager].publicHandle reformReceiveDataWithTask:apiTask];
+    }
+    if ([child respondsToSelector:@selector(reformReceiveDataWithTask:)]) {
+        apiTask.receiveData = [child reformReceiveDataWithTask:apiTask];
     }
     
-    if ([child respondsToSelector:@selector(reformResponseData:withTask:)]) {
-        reformData = [child reformResponseData:reformData ? reformData : apiTask.responseData withTask:apiTask];
-    }
-    apiTask.receiveData = reformData ? reformData : apiTask.responseData;
     [self successWithTask:apiTask];
 }
 

@@ -14,10 +14,11 @@
 {
     urlString = @"my/my-credits";
     
-    // requestType = ZQApiRequestTypePostFile;
-    [self setProgressBlock:^(NSProgress *uploadProgress) {
-        NSLog(@"%f", uploadProgress.fractionCompleted);
-    }];
+//     requestType = ZQApiRequestTypePostFile;
+//    [self setProgressBlock:^(NSProgress *uploadProgress) {
+//        NSLog(@"%f", uploadProgress.fractionCompleted);
+//    }];
+    autoResume = YES;
     autoCache = YES;
     preferredAutoCacheTimeInterval = 5.0;
     taskIdentifierBlock = ^(ZQApiTask *task) {
@@ -32,15 +33,22 @@
     return [super loadData];
 }
 
-- (void)postFileWithFormData:(id<ZQMultipartFormData>)formData
+- (ZQApiTask *)loadDataWithParam:(NSString *)param
 {
-    NSData *data = UIImagePNGRepresentation([UIImage imageNamed:@"img_01"]);
-    [formData appendPartWithFileData:data name:@"fdf" fileName:@"fdfd" mimeType:@"image/png"];
+    params[@"test"] = param;
+    
+    return [self loadData];
 }
 
 - (void)changeRequestPolicy:(ZQApiRequestPolicy)apiRequestPolicy
 {
     requestPolicy = apiRequestPolicy;
+}
+
+- (void)postFileWithFormData:(id<ZQMultipartFormData>)formData
+{
+    NSData *data = UIImagePNGRepresentation([UIImage imageNamed:@"img_01"]);
+    [formData appendPartWithFileData:data name:@"fdf" fileName:@"fdfd" mimeType:@"image/png"];
 }
 
 - (BOOL)isCorrectParamsWithTask:(ZQApiTask *)task errorInfo:(NSMutableDictionary *)errorInfo
@@ -51,6 +59,21 @@
 - (BOOL)isCorrectResponseDataWithTask:(ZQApiTask *)task errorInfo:(NSMutableDictionary *)errorInfo
 {
     return YES;
+}
+
+- (id)reformReceiveDataWithTask:(ZQApiTask *)task
+{
+    return task.receiveData;// 原样返回
+}
+
+- (void)requestDidSuccessWithTask:(ZQApiTask *)task
+{
+    
+}
+
+- (void)requestDidFailureWithTask:(ZQApiTask *)task
+{
+    
 }
 
 @end
